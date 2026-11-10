@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Слоги на И</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Golos+Text:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #F3F6FB; --ink: #141A26; --muted: #5B6578; --line: #141A26; --card: #FFFFFF;
+  --accent: #2457F5; --accent-ink: #FFFFFF; --mark: #FFD84D; --mark-ink: #141A26;
+  --ok: #17874F; --ok-bg: #DDF3E6; --bad: #CF3030; --bad-bg: #FBE1E1; --soft: #E6ECF7;
+  --f-display: "Rubik", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --f-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F131C; --ink: #EEF2FA; --muted: #9AA5BA; --line: #C9D3E6; --card: #181E2B;
+    --accent: #7E9DFF; --accent-ink: #0F131C; --mark: #FFD84D; --mark-ink: #141A26;
+    --ok: #5DD596; --ok-bg: #12301F; --bad: #FF7A7A; --bad-bg: #3A1A1D; --soft: #222A3B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F131C; --ink: #EEF2FA; --muted: #9AA5BA; --line: #C9D3E6; --card: #181E2B;
+  --accent: #7E9DFF; --accent-ink: #0F131C; --mark: #FFD84D; --mark-ink: #141A26;
+  --ok: #5DD596; --ok-bg: #12301F; --bad: #FF7A7A; --bad-bg: #3A1A1D; --soft: #222A3B;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.45;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+header { display: flex; flex-direction: column; gap: 12px; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 8vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.progress { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dots { display: flex; gap: 6px; }
+.dot { width: 34px; height: 12px; border-radius: 6px; background: var(--soft); border: 2px solid var(--line); }
+.dot.on { background: var(--ok); border-color: var(--ok); }
+.progress-text { font-weight: 600; color: var(--muted); font-size: 15px; }
+
+.ex { background: var(--card); border: 3px solid var(--line); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.ex-head { display: flex; gap: 12px; align-items: flex-start; }
+.num { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--mark); color: var(--mark-ink); font-family: var(--f-display); font-weight: 800; font-size: 22px; display: grid; place-items: center; }
+.ex-head h2 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 20px; line-height: 1.25; text-wrap: balance; }
+.hint { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button.btn { font: 700 17px/1 var(--f-display); border: 3px solid var(--line); border-radius: 14px; padding: 13px 20px; cursor: pointer; background: var(--card); color: var(--ink); min-height: 48px; }
+button.btn:active { transform: translateY(1px); }
+.result { font-weight: 600; min-height: 1.45em; flex: 1 1 200px; }
+.result.good { color: var(--ok); }
+.result.warn { color: var(--bad); }
+
+.tbl-wrap { border: 3px solid var(--line); border-radius: 16px; overflow: hidden; }
+table.syl { border-collapse: collapse; width: 100%; table-layout: fixed; }
+table.syl td { border: 2px solid var(--line); padding: 0; }
+table.syl td:first-child { border-left: 0; }
+table.syl td:last-child { border-right: 0; }
+table.syl tr:first-child td { border-top: 0; }
+table.syl tr:last-child td { border-bottom: 0; }
+button.cell { width: 100%; height: 84px; border: 0; background: var(--card); color: var(--ink); font: 800 32px/1 var(--f-display); letter-spacing: 0.04em; cursor: pointer; padding: 0; }
+button.cell .v { color: var(--accent); }
+button.cell:hover { background: var(--soft); }
+button.cell.read { background: var(--ok-bg); }
+button.cell.read .v { color: var(--ok); }
+
+.items { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 22px; }
+.item { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.build { display: flex; gap: 8px; }
+.word { border: 2.5px solid var(--line); border-radius: 14px; padding: 10px 8px; font-family: var(--f-display); font-weight: 700; font-size: 30px; letter-spacing: 0.04em; background: var(--card); text-align: center; flex: 1 1 0; min-width: 0; }
+.word.fixed { background: var(--soft); }
+.word.slot { border-style: dashed; color: var(--muted); }
+.word.slot.ok { border-style: solid; border-color: var(--ok); background: var(--ok-bg); color: var(--ink); }
+.opts { display: flex; gap: 8px; }
+button.opt { flex: 1 1 0; min-width: 0; font: 700 22px/1 var(--f-display); letter-spacing: 0.04em; border: 2.5px solid var(--line); border-radius: 14px; padding: 12px 6px; background: var(--card); color: var(--ink); cursor: pointer; min-height: 52px; }
+button.opt:hover:not(:disabled) { background: var(--soft); }
+button.opt.bad { background: var(--bad-bg); border-color: var(--bad); }
+button.opt.ok { background: var(--ok-bg); border-color: var(--ok); }
+button.opt:disabled { cursor: default; opacity: 0.55; }
+button.opt.ok:disabled { opacity: 1; }
+
+.count-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.count-card { border: 2.5px solid var(--line); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.count-card .big { font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: 0.04em; text-align: center; overflow-wrap: anywhere; }
+.count-card .split { min-height: 1.3em; text-align: center; font: 600 18px/1.3 var(--f-display); letter-spacing: 0.06em; color: var(--ok); }
+.count-card.done { background: var(--ok-bg); border-color: var(--ok); }
+
+@media (max-width: 520px) {
+  .ex { padding: 14px; }
+  button.cell { height: 72px; font-size: 26px; }
+  .count-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button.cell, button.opt, .word, .count-card { transition: background-color .15s, border-color .15s; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Слоги на И</h1>
+    <div class="progress">
+      <div class="dots" aria-hidden="true"><span class="dot" id="d1"></span><span class="dot" id="d2"></span><span class="dot" id="d3"></span></div>
+      <span class="progress-text" id="ptext">Сделано 0 из 3</span>
+    </div>
+  </header>
+
+  <section class="ex" aria-labelledby="t1">
+    <div class="ex-head"><div class="num">1</div>
+      <div><h2 id="t1">Прочитай слоги с буквой И.</h2>
+      <p class="hint">Читай слог вслух и нажимай на него. Прочитанный слог станет зелёным.</p></div></div>
+    <div class="tbl-wrap"><table class="syl" id="tbl" aria-label="Таблица слогов с буквой И"></table></div>
+    <div class="bar">
+      <button class="btn" id="rst1" type="button">Начать заново</button>
+      <div class="result" id="res1" role="status" aria-live="polite">Прочитано 0 из 12</div>
+    </div>
+  </section>
+
+  <section class="ex" aria-labelledby="t2">
+    <div class="ex-head"><div class="num">2</div>
+      <div><h2 id="t2">Собери слово из двух слогов.</h2>
+      <p class="hint">Первый слог уже стоит. Нажми на второй слог, который подходит.</p></div></div>
+    <div class="items" id="ex2"></div>
+    <div class="bar">
+      <button class="btn" id="rst2" type="button">Начать заново</button>
+      <div class="result" id="res2" role="status" aria-live="polite">Собрано 0 из 6</div>
+    </div>
+  </section>
+
+  <section class="ex" aria-labelledby="t3">
+    <div class="ex-head"><div class="num">3</div>
+      <div><h2 id="t3">Сколько слогов в слове?</h2>
+      <p class="hint">Прочитай слово и посчитай гласные. Сколько гласных, столько и слогов. Нажми на цифру.</p></div></div>
+    <div class="count-grid" id="ex3"></div>
+    <div class="bar">
+      <button class="btn" id="rst3" type="button">Начать заново</button>
+      <div class="result" id="res3" role="status" aria-live="polite">Готово 0 из 8</div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var done = [false, false, false];
+  function refresh() {
+    var n = 0;
+    for (var i = 0; i < 3; i++) {
+      document.getElementById('d' + (i + 1)).classList.toggle('on', done[i]);
+      if (done[i]) n++;
+    }
+    document.getElementById('ptext').textContent = n === 3 ? 'Все три задания сделаны. Молодец!' : 'Сделано ' + n + ' из 3';
+  }
+  function setRes(el, text, kind) { el.className = 'result' + (kind ? ' ' + kind : ''); el.textContent = text; }
+
+  var CONS = ['Б', 'В', 'Г', 'Д', 'К', 'Л', 'М', 'Н', 'П', 'Р', 'С', 'Т'];
+  var tbl = document.getElementById('tbl'), res1 = document.getElementById('res1');
+  var cells = [];
+  function count1() {
+    var n = cells.filter(function (c) { return c.classList.contains('read'); }).length;
+    done[0] = n === CONS.length; refresh();
+    if (done[0]) setRes(res1, 'Все слоги прочитаны. Молодец!', 'good'); else setRes(res1, 'Прочитано ' + n + ' из ' + CONS.length);
+  }
+  for (var r = 0; r < 3; r++) {
+    var tr = document.createElement('tr');
+    for (var c = 0; c < 4; c++) {
+      var k = r * 4 + c, td = document.createElement('td');
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'cell'; b.id = 'cell' + k;
+      b.innerHTML = CONS[k] + '<span class="v">И</span>';
+      b.setAttribute('aria-label', 'Слог ' + CONS[k] + 'И');
+      b.addEventListener('click', (function (b) { return function () { b.classList.toggle('read'); count1(); }; })(b));
+      cells.push(b); td.appendChild(b); tr.appendChild(td);
+    }
+    tbl.appendChild(tr);
+  }
+  document.getElementById('rst1').addEventListener('click', function () { cells.forEach(function (c) { c.classList.remove('read'); }); count1(); });
+
+  var ex2 = [
+    ['ЛИ', 'СА', ['НО', 'СА', 'ТО']],
+    ['КИ', 'НО', ['РО', 'ДУ', 'НО']],
+    ['ПИ', 'ЛА', ['ТО', 'МО', 'ЛА']],
+    ['ЗИ', 'МА', ['ЛО', 'МА', 'ТУ']],
+    ['ВИ', 'НО', ['СА', 'МУ', 'НО']],
+    ['СИ', 'ЛА', ['МО', 'ЛА', 'ТУ']]
+  ];
+  var box2 = document.getElementById('ex2'), res2 = document.getElementById('res2');
+  var items2 = [];
+  function count2() {
+    var n = items2.filter(function (i) { return i.solved; }).length;
+    done[1] = n === ex2.length; refresh();
+    if (done[1]) setRes(res2, 'Все слова собраны. Молодец!', 'good'); else setRes(res2, 'Собрано ' + n + ' из ' + ex2.length);
+  }
+  ex2.forEach(function (it, i) {
+    var item = document.createElement('div'); item.className = 'item';
+    var row = document.createElement('div'); row.className = 'build';
+    var first = document.createElement('div'); first.className = 'word fixed'; first.textContent = it[0];
+    var slot = document.createElement('div'); slot.className = 'word slot'; slot.textContent = '?'; slot.id = 'slot' + i;
+    row.appendChild(first); row.appendChild(slot);
+    var opts = document.createElement('div'); opts.className = 'opts';
+    var rec = { solved: false, slot: slot, btns: [] };
+    it[2].forEach(function (o, oi) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.id = 'o' + i + '-' + oi; b.textContent = o;
+      b.setAttribute('aria-label', 'Слог ' + o);
+      b.addEventListener('click', function () {
+        if (rec.solved) return;
+        if (o === it[1]) {
+          rec.solved = true; slot.textContent = o; slot.className = 'word slot ok'; b.classList.add('ok');
+          rec.btns.forEach(function (x) { x.disabled = true; });
+          setRes(res2, 'Верно: ' + it[0] + it[1] + '.', 'good');
+          setTimeout(count2, 900);
+        } else {
+          b.classList.add('bad'); setRes(res2, 'Не подходит. Попробуй другой слог.', 'warn');
+          setTimeout(function () { b.classList.remove('bad'); }, 700);
+        }
+      });
+      rec.btns.push(b); opts.appendChild(b);
+    });
+    item.appendChild(row); item.appendChild(opts); box2.appendChild(item); items2.push(rec);
+  });
+  document.getElementById('rst2').addEventListener('click', function () {
+    items2.forEach(function (rec) {
+      rec.solved = false; rec.slot.textContent = '?'; rec.slot.className = 'word slot';
+      rec.btns.forEach(function (b) { b.disabled = false; b.classList.remove('ok', 'bad'); });
+    });
+    done[1] = false; refresh(); setRes(res2, 'Собрано 0 из ' + ex2.length);
+  });
+
+  var ex3 = [
+    ['КИТ', 1, 'КИТ'], ['РИС', 1, 'РИС'], ['ЛИСА', 2, 'ЛИ-СА'], ['ЗИМА', 2, 'ЗИ-МА'],
+    ['ПИЛА', 2, 'ПИ-ЛА'], ['СИНИЦА', 3, 'СИ-НИ-ЦА'], ['МАШИНА', 3, 'МА-ШИ-НА'], ['ВИНОГРАД', 3, 'ВИ-НО-ГРАД']
+  ];
+  var box3 = document.getElementById('ex3'), res3 = document.getElementById('res3');
+  var items3 = [];
+  function count3() {
+    var n = items3.filter(function (i) { return i.solved; }).length;
+    done[2] = n === ex3.length; refresh();
+    if (done[2]) setRes(res3, 'Все слова посчитаны. Молодец!', 'good'); else setRes(res3, 'Готово ' + n + ' из ' + ex3.length);
+  }
+  ex3.forEach(function (it, i) {
+    var card = document.createElement('div'); card.className = 'count-card';
+    var big = document.createElement('div'); big.className = 'big'; big.textContent = it[0];
+    var opts = document.createElement('div'); opts.className = 'opts';
+    var split = document.createElement('div'); split.className = 'split'; split.setAttribute('aria-live', 'polite');
+    var rec = { solved: false, card: card, split: split, btns: [] };
+    [1, 2, 3].forEach(function (n) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.id = 'c' + i + '-' + n; b.textContent = n;
+      b.setAttribute('aria-label', n + (n === 1 ? ' слог' : ' слога'));
+      b.addEventListener('click', function () {
+        if (rec.solved) return;
+        if (n === it[1]) {
+          rec.solved = true; b.classList.add('ok'); card.classList.add('done'); split.textContent = it[2];
+          rec.btns.forEach(function (x) { x.disabled = true; });
+          count3();
+        } else {
+          b.classList.add('bad'); setTimeout(function () { b.classList.remove('bad'); }, 700);
+        }
+      });
+      rec.btns.push(b); opts.appendChild(b);
+    });
+    card.appendChild(big); card.appendChild(opts); card.appendChild(split); box3.appendChild(card); items3.push(rec);
+  });
+  document.getElementById('rst3').addEventListener('click', function () {
+    items3.forEach(function (rec) {
+      rec.solved = false; rec.card.classList.remove('done'); rec.split.textContent = '';
+      rec.btns.forEach(function (b) { b.disabled = false; b.classList.remove('ok', 'bad'); });
+    });
+    done[2] = false; refresh(); setRes(res3, 'Готово 0 из ' + ex3.length);
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
